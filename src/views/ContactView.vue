@@ -8,16 +8,16 @@
           <i class="fas fa-envelope"></i>
           <p>
             <strong>Email:</strong>
-            <a href="mailto:your-email@example.com">your-email@example.com</a>
+            <a href="mailto:your-email@example.com">antalkrisztian10@gmail.com</a>
           </p>
         </div>
         <div class="contact-item">
           <i class="fas fa-phone"></i>
-          <p><strong>Phone:</strong> +1 234 567 890</p>
+          <p><strong>Phone:</strong> +40 743557579</p>
         </div>
         <div class="contact-item">
           <i class="fas fa-map-marker-alt"></i>
-          <p><strong>Address:</strong> 1234 Your Street, Your City, Your Country</p>
+          <p><strong>Address:</strong> Baia Mare, Maramures, Romania</p>
         </div>
         <p class="note">
           We'd love to hear from you! Feel free to reach out for any inquiries or feedback.

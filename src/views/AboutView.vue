@@ -10,15 +10,18 @@
       <div class="col-md-6 text-section">
         <h2>Why Choose Us?</h2>
         <p>
-          Welcome to EduPlatform! We are dedicated to providing a comprehensive and engaging
-          learning environment for students of all ages. Our platform offers a wide range of
-          courses, expert instructors, and interactive learning tools to ensure you gain the
-          knowledge and skills you need for your academic and professional growth.
+          Welcome to <strong>EduCore</strong> – your all-in-one educational platform designed to
+          simplify and enhance the learning experience for both students and educators. EduCore
+          provides a seamless way to manage courses, assignments, quizzes, and communication, all in
+          one modern and intuitive interface.
         </p>
         <p>
-          At EduPlatform, we believe in making education accessible to everyone. Whether you're
-          looking to enhance your career or simply want to learn something new, we have the right
-          course for you. Join us today and start your journey to success!
+          Whether you're a student tracking your progress or a teacher organizing lessons and
+          grading work, EduCore offers the tools you need to succeed. With built-in features like
+          personalized dashboards, secure file submissions, real-time grading, and smart course
+          management, EduCore transforms traditional education into a fully digital, interactive
+          experience. Start learning or teaching smarter — join EduCore today and be part of the
+          future of education.
         </p>
         <router-link to="/courses" class="btn btn-primary">Enroll Now!</router-link>
       </div>
