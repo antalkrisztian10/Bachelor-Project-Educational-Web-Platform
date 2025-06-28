@@ -40,7 +40,7 @@
     <div v-if="quizFinished || quizFinishedPreviously" class="quiz-results">
       <h1>{{ courseTitle }}</h1>
       <h2>{{ quizTitle }} Results</h2>
-      <p>Your Grade: {{ grade }} / 10</p>
+      <p>Your Score: {{ grade }} / 10</p>
       <h3>Correct Answers: {{ correctAnswersCount }} / {{ totalQuestions }}</h3>
       <div class="results-container">
         <div v-for="(question, index) in questions" :key="index" class="result-question">
@@ -98,6 +98,7 @@ export default {
       // Timer
       timeLeft: 0,
       timerInterval: null,
+      quizStartTime: null, // NEW: absolute start timestamp (ms)
 
       // Results
       correctAnswersCount: 0,
@@ -164,10 +165,20 @@ export default {
     // ===== QUIZ FLOW METHODS =====
     startQuiz() {
       this.quizStarted = true
-      // If there's no existing timeLeft, set it
-      if (!this.timeLeft) {
-        this.timeLeft = this.maxDuration * 60
+
+      // If we don't yet have a timestamp, set it
+      if (!this.quizStartTime) {
+        this.quizStartTime = Date.now()
       }
+
+      // Recalculate remaining time based on absolute start time
+      this.timeLeft = this.maxDuration * 60 - Math.floor((Date.now() - this.quizStartTime) / 1000)
+
+      if (this.timeLeft <= 0) {
+        this.finishQuiz()
+        return
+      }
+
       this.startTimer()
       this.saveQuizState()
     },
@@ -219,13 +230,14 @@ export default {
       clearInterval(this.timerInterval)
 
       this.timerInterval = setInterval(() => {
-        if (this.timeLeft > 0) {
-          this.timeLeft--
-          this.saveQuizState() // Update localStorage every tick
-        } else {
-          // Time is up
+        // Recalculate remaining time each tick using absolute time ─ robust against tab sleeps
+        this.timeLeft = this.maxDuration * 60 - Math.floor((Date.now() - this.quizStartTime) / 1000)
+
+        if (this.timeLeft <= 0) {
           this.finishQuiz()
         }
+
+        this.saveQuizState() // Persist every tick
       }, 1000)
     },
 
@@ -240,11 +252,12 @@ export default {
 
     // ===== LOCAL STORAGE =====
     loadQuizState() {
-      // Unique key per quiz + user
       const key = `quiz_state_${this.$route.params.id}_${localStorage.getItem('userId')}`
       const saved = localStorage.getItem(key)
       if (saved) {
         const parsed = JSON.parse(saved)
+
+        this.quizStartTime = parsed.quizStartTime || null
 
         // Only restore state if quiz isn't already finished
         if (!parsed.quizFinished) {
@@ -252,7 +265,19 @@ export default {
           this.quizFinished = parsed.quizFinished
           this.currentQuestionIndex = parsed.currentQuestionIndex
           this.userAnswers = parsed.userAnswers || []
-          this.timeLeft = parsed.timeLeft || 0
+
+          // If we have a timestamp, recalc remaining time
+          if (this.quizStartTime) {
+            const elapsed = Math.floor((Date.now() - this.quizStartTime) / 1000)
+            this.timeLeft = Math.max(this.maxDuration * 60 - elapsed, 0)
+          } else {
+            this.timeLeft = parsed.timeLeft || 0
+          }
+
+          if (this.timeLeft <= 0) {
+            this.finishQuiz()
+            return
+          }
 
           // If the quiz was in progress, resume the timer
           if (this.quizStarted && !this.quizFinished) {
@@ -268,7 +293,8 @@ export default {
         quizFinished: this.quizFinished,
         currentQuestionIndex: this.currentQuestionIndex,
         userAnswers: this.userAnswers,
-        timeLeft: this.timeLeft
+        timeLeft: this.timeLeft,
+        quizStartTime: this.quizStartTime // NEW: persist timestamp
       }
       localStorage.setItem(key, JSON.stringify(state))
     },
