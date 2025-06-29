@@ -82,7 +82,8 @@ export default {
         id: this.$route.params.id,
         title: '',
         description: '',
-        createdBy: ''
+        creator_id: '',
+        createdBy: '' // This will store the creator's name
       },
       enrolledStudents: [],
       showAddStudentModal: false,
@@ -97,7 +98,7 @@ export default {
     async loadCourseData() {
       try {
         const response = await axios.get(`/admin/courses/${this.course.id}`)
-        this.course = response.data
+        this.course = { ...this.course, ...response.data }
       } catch (error) {
         console.error('Error fetching course details:', error.response?.data || error.message)
         alert('Failed to load course details.')

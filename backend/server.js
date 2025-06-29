@@ -1916,11 +1916,14 @@ app.get('/admin/courses/:id', async (req, res) => {
 
   try {
     const result = await pool.query(
-      `SELECT id, title, password, color, description, creator_id 
-       FROM courses 
-       WHERE id = $1`,
+      `SELECT c.id, c.title, c.password, c.color, c.description, c.creator_id, u.full_name AS "createdBy"
+       FROM courses c
+       LEFT JOIN users u ON c.creator_id = u.id
+       WHERE c.id = $1`,
       [courseId]
     )
+
+    console.log('Course query result:', result.rows[0]) // Add this debug line
 
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Course not found' })
